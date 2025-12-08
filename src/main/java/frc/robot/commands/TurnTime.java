@@ -1,7 +1,6 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -12,47 +11,48 @@ import frc.robot.subsystems.Drivetrain;
  * desired rotational speed and time.
  */
 public class TurnTime extends Command {
-  private final double m_duration;
-  private final double m_rotationalSpeed;
-  private final Drivetrain m_drive;
-  private long m_startTime;
 
-  /**
-   * Creates a new TurnTime.
-   *
-   * @param speed The speed which the robot will turn. Negative is in reverse.
-   * @param time How much time to turn in seconds
-   * @param drive The drive subsystem on which this command will run
-   */
-  public TurnTime(double speed, double time, Drivetrain drive) {
-    m_rotationalSpeed = speed;
-    m_duration = time * 1000;
-    m_drive = drive;
-    addRequirements(drive);
-  }
+    private final double m_duration;
+    private final double m_rotationalSpeed;
+    private final Drivetrain m_drive;
+    private long m_startTime;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    m_startTime = System.currentTimeMillis();
-    m_drive.arcadeDrive(0, 0);
-  }
+    /**
+     * Creates a new TurnTime.
+     *
+     * @param speed The speed which the robot will turn. Negative is in reverse.
+     * @param time How much time to turn in seconds
+     * @param drive The drive subsystem on which this command will run
+     */
+    public TurnTime(double speed, double time, Drivetrain drive) {
+        m_rotationalSpeed = speed;
+        m_duration = time * 1000;
+        m_drive = drive;
+        addRequirements(drive);
+    }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    m_drive.arcadeDrive(0, m_rotationalSpeed);
-  }
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        m_startTime = System.currentTimeMillis();
+        m_drive.arcadeDrive(0, 0);
+    }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    m_drive.arcadeDrive(0, 0);
-  }
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        m_drive.arcadeDrive(0, m_rotationalSpeed);
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return (System.currentTimeMillis() - m_startTime) >= m_duration;
-  }
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        m_drive.arcadeDrive(0, 0);
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return (System.currentTimeMillis() - m_startTime) >= m_duration;
+    }
 }

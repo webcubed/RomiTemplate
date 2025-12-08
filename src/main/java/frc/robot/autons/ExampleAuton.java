@@ -6,10 +6,11 @@ import frc.robot.subsystems.Drivetrain;
 
 // EXAMPLE AUTON
 public class ExampleAuton extends SequentialCommandGroup {
+
     public ExampleAuton(Drivetrain drivetrain) {
-      addCommands(
-        new DriveDistance(0.5, 10, drivetrain)
-      );
+        addCommands(
+                new DriveDistance(0.5, 10, drivetrain)
+        );
     }
-	
-  }
+
+}
