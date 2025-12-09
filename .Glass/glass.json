@@ -1,9 +1,17 @@
 {
+  "NetworkTables": {
+    "Transitory Values": {
+      "open": false
+    }
+  },
   "NetworkTables Info": {
     "Connections": {
       "open": true
     },
     "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Disabled"
   },
   "Plots": {
     "Plot <0>": {
