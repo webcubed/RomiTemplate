@@ -11,9 +11,9 @@ public class BaseToCenterB extends SequentialCommandGroup {
     public BaseToCenterB(Drivetrain drivetrain) {
 
         addCommands(
-                new DriveDistance(0.5, 10, drivetrain),
-                new DriveTurn(0.5, -90, 1, drivetrain),
-                new DriveDistance(0.5, 7, drivetrain)
+                new DriveDistance(0.5, 17.5, drivetrain),
+                new DriveTurn(0.5, 90, 1, drivetrain),
+                new DriveDistance(0.5, 10, drivetrain)
                         
         );
     }
