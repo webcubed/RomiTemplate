@@ -19,7 +19,7 @@ public class DriveArc extends Command {
      * a desired distance at a desired speed.
      *
      * @param speed The speed at which the robot will drive
-     * @param inches The number of inches the robot will drive
+     * @param inches The number of inches the robot will drive nice copy paste bro
      * @param drive The drivetrain subsystem on which this command will run
      */
     public DriveArc(double leftSpeed, double rightSpeed, Drivetrain drive, long time) {

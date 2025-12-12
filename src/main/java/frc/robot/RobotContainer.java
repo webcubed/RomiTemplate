@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.romi.OnBoardIO;
 import edu.wpi.first.wpilibj.romi.OnBoardIO.ChannelMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -68,9 +69,9 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Default command is arcade drive. This will run unless another command
         // is scheduled over it.
-        // m_drivetrain.setDefaultCommand(getArcadeDriveCommand());
+        m_drivetrain.setDefaultCommand(getArcadeDriveCommand());
         // Speed & rotation
-        m_drivetrain.setDefaultCommand(getTankDriveCommand());
+        //m_drivetrain.setDefaultCommand(getTankDriveCommand());
         // left & right motor speed
 
         // Example of how to use the onboard IO
@@ -79,7 +80,7 @@ public class RobotContainer {
         onboardButtonA
                 .onTrue(new PrintCommand("Button A Pressed"))
                 .onFalse(new PrintCommand("Button A Released"));
-
+        
         // Setup SmartDashboard options
         m_chooser.setDefaultOption("Example Auton", new ExampleAuton(m_drivetrain));
         // A has a rectangle
@@ -88,6 +89,7 @@ public class RobotContainer {
         m_chooser.addOption("BaseToCenterB", new BaseToCenterB(m_drivetrain));
 
         SmartDashboard.putData(m_chooser);
+
     }
 
     /**
@@ -106,11 +108,11 @@ public class RobotContainer {
      */
     public Command getArcadeDriveCommand() {
         return new ArcadeDrive(
-                m_drivetrain, () -> -m_controller.getRawAxis(1), () -> -m_controller.getRawAxis(0));
+                m_drivetrain, () -> -m_controller.getRawAxis(1) / 2, () -> -m_controller.getRawAxis(0) / 1.5);
     }
 
     public Command getTankDriveCommand() {
         return new TankDrive(
-                m_drivetrain, () -> -m_controller.getRawAxis(1), () -> -m_controller.getRawAxis(0));
+                m_drivetrain, () -> -m_controller.getRawAxis(1) / 2, () -> -m_controller.getRawAxis(0) / 1.5);
     }
 }
