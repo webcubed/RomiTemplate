@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autons.BaseToCenterA;
 import frc.robot.autons.BaseToCenterB;
 import frc.robot.autons.ExampleAuton;
+import frc.robot.commands.ChangeInputSpeed;
+import frc.robot.commands.DriveArc;
 import frc.robot.driveCommands.ArcadeDrive;
 import frc.robot.driveCommands.TankDrive;
 import frc.robot.subsystems.Drivetrain;
@@ -29,13 +31,22 @@ import frc.robot.subsystems.Drivetrain;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // The robot's subsystems and commands are defined here...
 
+    // The robot's subsystems and commands are defined here...
+    public static double reductionFactor = 2;
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final OnBoardIO m_onboardIO = new OnBoardIO(ChannelMode.INPUT, ChannelMode.INPUT);
 
     // Assumes a gamepad plugged into channel 0
     private final Joystick m_controller = new Joystick(0);
+    private final JoystickButton keyZ = new JoystickButton(m_controller, 90);
+    private final JoystickButton keyX = new JoystickButton(m_controller, 88);
+    private final JoystickButton keyC = new JoystickButton(m_controller, 67);
+    private final JoystickButton keyV = new JoystickButton(m_controller, 86);
+    private final JoystickButton keyI = new JoystickButton(m_controller, 73);
+    private final JoystickButton keyJ = new JoystickButton(m_controller, 74);
+    private final JoystickButton keyK = new JoystickButton(m_controller, 75);
+    private final JoystickButton keyL = new JoystickButton(m_controller, 76);
 
     // Create SmartDashboard chooser for autonomous routines
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -80,7 +91,13 @@ public class RobotContainer {
         onboardButtonA
                 .onTrue(new PrintCommand("Button A Pressed"))
                 .onFalse(new PrintCommand("Button A Released"));
-        
+        // J and L for 90 deg increments
+        keyJ.onTrue(new DriveArc(0.5, 1, m_drivetrain, 500));
+        keyL.onTrue(new DriveArc(1, 0.5, m_drivetrain, 500));
+
+        // Z for slow, X for fast (man)
+        keyZ.onTrue(new ChangeInputSpeed(1.5));
+        keyX.onTrue(new ChangeInputSpeed(1));
         // Setup SmartDashboard options
         m_chooser.setDefaultOption("Example Auton", new ExampleAuton(m_drivetrain));
         // A has a rectangle
@@ -108,11 +125,11 @@ public class RobotContainer {
      */
     public Command getArcadeDriveCommand() {
         return new ArcadeDrive(
-                m_drivetrain, () -> -m_controller.getRawAxis(1) / 2, () -> -m_controller.getRawAxis(0) / 1.5);
+                m_drivetrain, () -> -m_controller.getRawAxis(1) / reductionFactor, () -> -m_controller.getRawAxis(0) / reductionFactor);
     }
 
     public Command getTankDriveCommand() {
         return new TankDrive(
-                m_drivetrain, () -> -m_controller.getRawAxis(1) / 2, () -> -m_controller.getRawAxis(0) / 1.5);
+                m_drivetrain, () -> -m_controller.getRawAxis(1) / reductionFactor, () -> -m_controller.getRawAxis(0) / reductionFactor);
     }
 }

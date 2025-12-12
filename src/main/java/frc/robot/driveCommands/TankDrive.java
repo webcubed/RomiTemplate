@@ -33,7 +33,7 @@ public class TankDrive extends Command {
     @Override
     public void execute() {
 
-    m_drivetrain.tankDrive(leftSpeedSupplier.get(), rightSpeedSupplier.get());
+    m_drivetrain.tankDrive(leftSpeedSupplier.get(), rightSpeedSupplier.get()); // Manually correct here
 }
 
     // Called once the command ends or is interrupted.
