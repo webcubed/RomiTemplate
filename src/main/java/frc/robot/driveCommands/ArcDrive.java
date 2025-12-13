@@ -12,6 +12,7 @@ public class ArcDrive extends Command {
 
     public static boolean active = false;
     public static double speedFactor = 0.6; // Start slow, to be tested
+    public static double turnFactor = 0.15;
 
     private final Drivetrain m_drivetrain;
     private final Supplier<Double> leftSpeedSupplier;
@@ -47,7 +48,7 @@ public class ArcDrive extends Command {
         // Then hitting axis 0, A and D, increases speed of either motor
         axisX = axisX * speedFactor;
         // Change this number MANUALLY, as this controls the maximum, and we don't always want the max to be 1
-        axisZ = axisZ * 0.15; // Only has 0.4 to move through (1 - 0.6), think of 0.4 as the whole, axis as the coefficient
+        axisZ = axisZ * turnFactor; // Only has 0.4 to move through (1 - 0.6), think of 0.4 as the whole, axis as the coefficient
 
         // Add inputs
         // Logic: turning right: X = 0.6, Z = 0.4 (assume full) -> leftspeed goes to 1, right speed goes to 0.2

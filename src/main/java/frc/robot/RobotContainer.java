@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.romi.OnBoardIO.ChannelMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -48,6 +49,8 @@ public class RobotContainer {
     private final JoystickButton keyJ = new JoystickButton(m_controller, 74);
     private final JoystickButton keyK = new JoystickButton(m_controller, 75);
     private final JoystickButton keyL = new JoystickButton(m_controller, 76);
+    private final JoystickButton keyPageUp = new JoystickButton(m_controller, 266);
+    private final JoystickButton keyPageDown = new JoystickButton(m_controller, 267);
 
     // Create SmartDashboard chooser for autonomous routines
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -100,6 +103,22 @@ public class RobotContainer {
         // Z for slow, X for fast (man)
         keyZ.onTrue(new ChangeInputSpeed(1.5));
         keyX.onTrue(new ChangeInputSpeed(1));
+
+        // PageUp/PageDown adjust ArcDrive.speedFactor by ±0.05 (clamped [0.1, 1.0])
+        keyPageUp.onTrue(new InstantCommand(() -> {
+            ArcDrive.speedFactor = Math.min(1.0, ArcDrive.speedFactor + 0.05);
+        }));
+        keyPageDown.onTrue(new InstantCommand(() -> {
+            ArcDrive.speedFactor = Math.max(0.1, ArcDrive.speedFactor - 0.05);
+        }));
+
+        // C/V adjust ArcDrive.turnFactor by ±0.05 (clamped [0.1, 1.0])
+        keyC.onTrue(new InstantCommand(() -> {
+            ArcDrive.turnFactor = Math.min(1.0, ArcDrive.turnFactor + 0.05);
+        }));
+        keyV.onTrue(new InstantCommand(() -> {
+            ArcDrive.turnFactor = Math.max(0.1, ArcDrive.turnFactor - 0.05);
+        }));
         // Setup SmartDashboard options
         m_chooser.setDefaultOption("Example Auton", new ExampleAuton(m_drivetrain));
         // A has a rectangle
