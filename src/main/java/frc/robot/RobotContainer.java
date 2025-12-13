@@ -10,15 +10,16 @@ import edu.wpi.first.wpilibj.romi.OnBoardIO;
 import edu.wpi.first.wpilibj.romi.OnBoardIO.ChannelMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autons.BaseToCenterA;
 import frc.robot.autons.BaseToCenterB;
 import frc.robot.autons.ExampleAuton;
 import frc.robot.commands.ChangeInputSpeed;
 import frc.robot.commands.DriveArc;
+import frc.robot.driveCommands.ArcDrive;
 import frc.robot.driveCommands.ArcadeDrive;
 import frc.robot.driveCommands.TankDrive;
 import frc.robot.subsystems.Drivetrain;
@@ -80,11 +81,12 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Default command is arcade drive. This will run unless another command
         // is scheduled over it.
-        m_drivetrain.setDefaultCommand(getArcadeDriveCommand());
+        // m_drivetrain.setDefaultCommand(getArcadeDriveCommand());
         // Speed & rotation
         //m_drivetrain.setDefaultCommand(getTankDriveCommand());
         // left & right motor speed
-
+        m_drivetrain.setDefaultCommand(getArcDriveCommand());
+        // combination of both
         // Example of how to use the onboard IO
         // Later
         Trigger onboardButtonA = new Trigger(m_onboardIO::getButtonAPressed);
@@ -131,5 +133,13 @@ public class RobotContainer {
     public Command getTankDriveCommand() {
         return new TankDrive(
                 m_drivetrain, () -> -m_controller.getRawAxis(1) / reductionFactor, () -> -m_controller.getRawAxis(0) / reductionFactor);
+    }
+
+    public Command getArcDriveCommand() {
+        // No reduction factor because
+        // 1. It's inherently slow
+        // 2. Can cycle between drives systems
+        return new ArcDrive(
+                m_drivetrain, () -> -m_controller.getRawAxis(1), () -> -m_controller.getRawAxis(0));
     }
 }
