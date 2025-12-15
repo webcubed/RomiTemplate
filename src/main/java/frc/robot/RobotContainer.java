@@ -18,12 +18,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autons.BaseToCenterA;
 import frc.robot.autons.BaseToCenterB;
 import frc.robot.autons.ExampleAuton;
-import frc.robot.commands.ChangeInputSpeed;
 import frc.robot.commands.DriveArc;
 import frc.robot.driveCommands.ArcDrive;
 import frc.robot.driveCommands.ArcadeDrive;
@@ -46,16 +44,11 @@ public class RobotContainer implements NativeKeyListener {
 
     // Assumes a gamepad plugged into channel 0
     private final Joystick m_controller = new Joystick(0);
-    private final JoystickButton keyZ = new JoystickButton(m_controller, 90);
-    private final JoystickButton keyX = new JoystickButton(m_controller, 88);
-    private final JoystickButton keyC = new JoystickButton(m_controller, 67);
-    private final JoystickButton keyV = new JoystickButton(m_controller, 86);
-    private final JoystickButton keyI = new JoystickButton(m_controller, 73);
-    private final JoystickButton keyJ = new JoystickButton(m_controller, 74);
-    private final JoystickButton keyK = new JoystickButton(m_controller, 75);
-    private final JoystickButton keyL = new JoystickButton(m_controller, 76);
-    private final JoystickButton keyPageUp = new JoystickButton(m_controller, 266);
-    private final JoystickButton keyPageDown = new JoystickButton(m_controller, 267);
+
+    private enum DriveMode {
+        ARCADE, ARC, TANK
+    }
+    private DriveMode driveMode = DriveMode.ARC;
 
     // Create SmartDashboard chooser for autonomous routines
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -95,13 +88,8 @@ public class RobotContainer implements NativeKeyListener {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // Default command is arcade drive. This will run unless another command
-        // is scheduled over it.
-        // m_drivetrain.setDefaultCommand(getArcadeDriveCommand());
-        // Speed & rotation
-        //m_drivetrain.setDefaultCommand(getTankDriveCommand());
-        // left & right motor speed
-        m_drivetrain.setDefaultCommand(getArcDriveCommand());
+        // Default drive is set via applyDefaultDrive()
+        applyDefaultDrive();
         // combination of both
         // Example of how to use the onboard IO
         // Later
@@ -109,13 +97,7 @@ public class RobotContainer implements NativeKeyListener {
         onboardButtonA
                 .onTrue(new PrintCommand("Button A Pressed"))
                 .onFalse(new PrintCommand("Button A Released"));
-        // J and L for 90 deg increments
-        keyJ.onTrue(new DriveArc(0.5, 1, m_drivetrain, 500));
-        keyL.onTrue(new DriveArc(1, 0.5, m_drivetrain, 500));
-
-        // Z for slow, X for fast (man)
-        keyZ.onTrue(new ChangeInputSpeed(1.5));
-        keyX.onTrue(new ChangeInputSpeed(1));
+        // J/L/Z/X handled by global key listener
         // Setup SmartDashboard options
         m_chooser.setDefaultOption("Example Auton", new ExampleAuton(m_drivetrain));
         // A has a rectangle
@@ -159,6 +141,25 @@ public class RobotContainer implements NativeKeyListener {
                 m_drivetrain, () -> -m_controller.getRawAxis(1), () -> -m_controller.getRawAxis(0));
     }
 
+    private void applyDefaultDrive() {
+        switch (driveMode) {
+            case ARCADE -> {
+                m_drivetrain.setDefaultCommand(getArcadeDriveCommand());
+                System.out.println("Drive mode: ARCADE");
+            }
+            case ARC -> {
+                m_drivetrain.setDefaultCommand(getArcDriveCommand());
+                System.out.println("Drive mode: ARC");
+            }
+            case TANK -> {
+                m_drivetrain.setDefaultCommand(getTankDriveCommand());
+                System.out.println("Drive mode: TANK");
+            }
+            default -> {
+            }
+        }
+    }
+
     @Override
     public void nativeKeyPressed(NativeKeyEvent e) {
         if (!DriverStation.isTeleopEnabled()) {
@@ -188,10 +189,38 @@ public class RobotContainer implements NativeKeyListener {
                 ArcDrive.turnFactor = Math.max(0.1, ArcDrive.turnFactor - 0.05);
                 System.out.println("ArcDrive.turnFactor: " + String.format("%.2f", ArcDrive.turnFactor));
             }
-            case 90 -> // VK_Z
-                System.out.println("Z pressed: input speed multiplier increased");
-            case 88 -> // VK_X
-                System.out.println("X pressed: input speed multiplier decreased");
+            case 90 -> { // VK_Z : previous drive mode
+                switch (driveMode) {
+                    case ARCADE ->
+                        driveMode = DriveMode.TANK;
+                    case ARC ->
+                        driveMode = DriveMode.ARCADE;
+                    case TANK ->
+                        driveMode = DriveMode.ARC;
+                    default -> {
+                    }
+                }
+                applyDefaultDrive();
+            }
+            case 88 -> { // VK_X : next drive mode
+                switch (driveMode) {
+                    case ARCADE ->
+                        driveMode = DriveMode.ARC;
+                    case ARC ->
+                        driveMode = DriveMode.TANK;
+                    case TANK ->
+                        driveMode = DriveMode.ARCADE;
+                    default -> {
+                    }
+                }
+                applyDefaultDrive();
+            }
+            case 74 -> { // VK_J : quick left arc
+                new DriveArc(0.5, 1, m_drivetrain, 500).schedule();
+            }
+            case 76 -> { // VK_L : quick right arc
+                new DriveArc(1, 0.5, m_drivetrain, 500).schedule();
+            }
             default -> {
             }
         }
