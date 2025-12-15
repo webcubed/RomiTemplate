@@ -53,7 +53,7 @@ public class ArcDrive extends Command {
         // Add inputs
         // Logic: turning right: X = 0.6, Z = 0.4 (assume full) -> leftspeed goes to 1, right speed goes to 0.2
         double leftSpeed = axisX + axisZ;
-        // Turning left: X = 0.6, Z = -0.4 -> leftspeed = 0.2, right speed = 1 (This is very aggressive turning)
+        // Turning left: X = 0.6, Z = -0.4 -> leftspeed = 0.2, right speed = 1 (This is very aggressive turning, consider no subtraction)
 
         double rightSpeed = axisX - axisZ;
         m_drivetrain.tankDrive(leftSpeed, rightSpeed);

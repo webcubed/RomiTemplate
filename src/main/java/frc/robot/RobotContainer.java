@@ -3,6 +3,12 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot;
 
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -11,7 +17,6 @@ import edu.wpi.first.wpilibj.romi.OnBoardIO.ChannelMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -32,7 +37,7 @@ import frc.robot.subsystems.Drivetrain;
  * scheduler calls). Instead, the structure of the robot (including subsystems,
  * commands, and button mappings) should be declared here.
  */
-public class RobotContainer {
+public class RobotContainer implements NativeKeyListener {
 
     // The robot's subsystems and commands are defined here...
     public static double reductionFactor = 2;
@@ -72,6 +77,16 @@ public class RobotContainer {
     public RobotContainer() {
         // Configure the button bindings
         configureButtonBindings();
+
+        // Register global keyboard hook only when running in simulation
+        try {
+            if (!edu.wpi.first.wpilibj.RobotBase.isReal()) {
+                GlobalScreen.registerNativeHook();
+                GlobalScreen.addNativeKeyListener(this);
+            }
+        } catch (NativeHookException e) {
+            System.err.println("Failed to register global keyboard hook: " + e.getMessage());
+        }
     }
 
     /**
@@ -103,22 +118,6 @@ public class RobotContainer {
         // Z for slow, X for fast (man)
         keyZ.onTrue(new ChangeInputSpeed(1.5));
         keyX.onTrue(new ChangeInputSpeed(1));
-
-        // PageUp/PageDown adjust ArcDrive.speedFactor by ±0.05 (clamped [0.1, 1.0])
-        keyPageUp.onTrue(new InstantCommand(() -> {
-            ArcDrive.speedFactor = Math.min(1.0, ArcDrive.speedFactor + 0.05);
-        }));
-        keyPageDown.onTrue(new InstantCommand(() -> {
-            ArcDrive.speedFactor = Math.max(0.1, ArcDrive.speedFactor - 0.05);
-        }));
-
-        // C/V adjust ArcDrive.turnFactor by ±0.05 (clamped [0.1, 1.0])
-        keyC.onTrue(new InstantCommand(() -> {
-            ArcDrive.turnFactor = Math.min(1.0, ArcDrive.turnFactor + 0.05);
-        }));
-        keyV.onTrue(new InstantCommand(() -> {
-            ArcDrive.turnFactor = Math.max(0.1, ArcDrive.turnFactor - 0.05);
-        }));
         // Setup SmartDashboard options
         m_chooser.setDefaultOption("Example Auton", new ExampleAuton(m_drivetrain));
         // A has a rectangle
@@ -160,5 +159,49 @@ public class RobotContainer {
         // 2. Can cycle between drives systems
         return new ArcDrive(
                 m_drivetrain, () -> -m_controller.getRawAxis(1), () -> -m_controller.getRawAxis(0));
+    }
+
+    @Override
+    public void nativeKeyPressed(NativeKeyEvent e) {
+        if (!DriverStation.isTeleopEnabled()) {
+            return;
+        }
+
+        int keyCode = e.getKeyCode();
+
+        switch (keyCode) {
+            case 33: // VK_PAGE_UP
+                ArcDrive.speedFactor = Math.min(1.0, ArcDrive.speedFactor + 0.05);
+                System.out.println("ArcDrive.speedFactor: " + String.format("%.2f", ArcDrive.speedFactor));
+                break;
+            case 34: // VK_PAGE_DOWN
+                ArcDrive.speedFactor = Math.max(0.1, ArcDrive.speedFactor - 0.05);
+                System.out.println("ArcDrive.speedFactor: " + String.format("%.2f", ArcDrive.speedFactor));
+                break;
+            case 67: // VK_C
+                ArcDrive.turnFactor = Math.min(1.0, ArcDrive.turnFactor + 0.05);
+                System.out.println("ArcDrive.turnFactor: " + String.format("%.2f", ArcDrive.turnFactor));
+                break;
+            case 86: // VK_V
+                ArcDrive.turnFactor = Math.max(0.1, ArcDrive.turnFactor - 0.05);
+                System.out.println("ArcDrive.turnFactor: " + String.format("%.2f", ArcDrive.turnFactor));
+                break;
+            case 90: // VK_Z
+                System.out.println("Z pressed: input speed multiplier increased");
+                break;
+            case 88: // VK_X
+                System.out.println("X pressed: input speed multiplier decreased");
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void nativeKeyReleased(NativeKeyEvent e) {
+    }
+
+    @Override
+    public void nativeKeyTyped(NativeKeyEvent e) {
     }
 }
