@@ -78,12 +78,10 @@ public class RobotContainer implements NativeKeyListener {
         // Configure the button bindings
         configureButtonBindings();
 
-        // Register global keyboard hook only when running in simulation
         try {
-            if (!edu.wpi.first.wpilibj.RobotBase.isReal()) {
-                GlobalScreen.registerNativeHook();
-                GlobalScreen.addNativeKeyListener(this);
-            }
+            GlobalScreen.registerNativeHook();
+            GlobalScreen.addNativeKeyListener(this);
+
         } catch (NativeHookException e) {
             System.err.println("Failed to register global keyboard hook: " + e.getMessage());
         }
