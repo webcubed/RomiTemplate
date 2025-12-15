@@ -170,30 +170,32 @@ public class RobotContainer implements NativeKeyListener {
         int keyCode = e.getKeyCode();
 
         switch (keyCode) {
-            case 33: // VK_PAGE_UP
+            case 33 -> {
+                // VK_PAGE_UP
                 ArcDrive.speedFactor = Math.min(1.0, ArcDrive.speedFactor + 0.05);
                 System.out.println("ArcDrive.speedFactor: " + String.format("%.2f", ArcDrive.speedFactor));
-                break;
-            case 34: // VK_PAGE_DOWN
+            }
+            case 34 -> {
+                // VK_PAGE_DOWN
                 ArcDrive.speedFactor = Math.max(0.1, ArcDrive.speedFactor - 0.05);
                 System.out.println("ArcDrive.speedFactor: " + String.format("%.2f", ArcDrive.speedFactor));
-                break;
-            case 67: // VK_C
+            }
+            case 67 -> {
+                // VK_C
                 ArcDrive.turnFactor = Math.min(1.0, ArcDrive.turnFactor + 0.05);
                 System.out.println("ArcDrive.turnFactor: " + String.format("%.2f", ArcDrive.turnFactor));
-                break;
-            case 86: // VK_V
+            }
+            case 86 -> {
+                // VK_V
                 ArcDrive.turnFactor = Math.max(0.1, ArcDrive.turnFactor - 0.05);
                 System.out.println("ArcDrive.turnFactor: " + String.format("%.2f", ArcDrive.turnFactor));
-                break;
-            case 90: // VK_Z
+            }
+            case 90 -> // VK_Z
                 System.out.println("Z pressed: input speed multiplier increased");
-                break;
-            case 88: // VK_X
+            case 88 -> // VK_X
                 System.out.println("X pressed: input speed multiplier decreased");
-                break;
-            default:
-                break;
+            default -> {
+            }
         }
     }
 
